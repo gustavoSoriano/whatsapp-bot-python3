@@ -9,6 +9,10 @@
     https://chromedriver.chromium.org/downloads
 ```
 
+## Chromedriver version
+```
+    86.0.4240.22
+```
 
 
 ## How to start project

@@ -2,41 +2,31 @@ from selenium import webdriver
 import time
 
 class WhatsappBot:
-    def __init__(self, pessoas):
-        self.pessoas  = pessoas
+    def __init__(self):
         options       = webdriver.ChromeOptions()
         options.add_argument('lang=pt-br')
-        self.driver   = webdriver.Chrome(executable_path='./chromedriver')
-        self.driver.get('https://web.whatsapp.com')
-        print('Aguardando 30 segundos para sincronização do QRCode')
-        time.sleep(30)
+
+        try:
+            self.driver   = webdriver.Chrome(executable_path='./chromedriver')
+            self.driver.get('https://web.whatsapp.com')
+            print('Waiting 30 seconds for QRCode synchronization')
+            time.sleep(30)
+        except Exception as e:
+            print("Oops!", e)
 
 
-    def envia_nao_contatos(self, telefone, mensagem):
-        self.driver.get( f'https://web.whatsapp.com/send?phone=${telefone}&text={mensagem}' )
-        time.sleep(5)
-        botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
-        botao_enviar.click()
-        print( f"Enviado para telefone: {telefone}")
-
-
-
-    def envia_contatos(self, mensagem):
-        for pessoa in self.pessoas:
-            print( f"Enviando mensagem para {pessoa}" )
-            pessoa = self.driver.find_element_by_xpath(f"//span[@title='{pessoa}']")
-            pessoa.click()
-            time.sleep(2)
-            
-            chat_box = self.driver.find_element_by_class_name('_13mgZ')
-            chat_box.click()
-            chat_box.send_keys( mensagem )
-
-            botao_enviar = self.driver.find_element_by_xpath("//span[@data-icon='send']")
-            botao_enviar.click()
+    def send_by_phone(self, phone, message):
+        if( "driver" in self.__dict__ ):
+            self.driver.get( f'https://web.whatsapp.com/send?phone=${phone}&text={message}' )
             time.sleep(5)
 
+            try:
+                send_button = self.driver.find_element_by_xpath("//span[@data-icon='send']")
+                send_button.click()
+                print( f"Sent to phone: {phone}")
+            except Exception as e:
+                print("Oops!", e.__class__, "occurred.")
 
-bot = WhatsappBot( ["Maria"] ) # Set Contact Name in list
-bot.envia_contatos(" Mensagem automatizada via Bot ")
-bot.envia_nao_contatos(5516997659374, "mensagem de teste")
+
+bot = WhatsappBot()
+bot.send_by_phone(5516997659374, "Bot automated message")
